@@ -14,7 +14,7 @@ def test_health_check(client):
 def test_get_todos(client, mocker):
     # order = asc
     mocker.patch(
-        "main.get_todos",
+        "api.todo.get_todos",
         return_value=[
             Todo(id=1, contents="FastAPI Section 0", is_done=True),
             Todo(id=2, contents="FastAPI Section 1", is_done=False),
@@ -43,7 +43,7 @@ def test_get_todos(client, mocker):
 def test_get_todo(client, mocker):
     # 200
     mocker.patch(
-        "main.get_todo_by_id",
+        "api.todo.get_todo_by_id",
         return_value=Todo(id=1, contents="FastAPI Section 0", is_done=True),
     )
     response = client.get("/todos/1")
@@ -51,7 +51,7 @@ def test_get_todo(client, mocker):
     assert response.json() == {"id": 1, "contents": "FastAPI Section 0", "is_done": True}
 
     # 404
-    mocker.patch("main.get_todo_by_id", return_value=None)
+    mocker.patch("api.todo.get_todo_by_id", return_value=None)
     response = client.get("/todos/2")
     assert response.status_code == 404
     assert response.json() == {"detail": "Todo not found"}
@@ -64,7 +64,7 @@ def test_create_todo(client, mocker):
     )  # Todo.create() 메서드를 spy한다. -> spy 특정 객체를 tracking하고, 그 개체가 어떤 반환값이나 연산을 했었는데 객체 안에 저장
 
     mocker.patch(
-        "main.create_todo",
+        "api.todo.create_todo",
         return_value=Todo(id=1, contents="FastAPI Section 0", is_done=True),
     )
 
@@ -85,12 +85,12 @@ def test_create_todo(client, mocker):
 def test_update_todo(client, mocker):
     # 200
     mocker.patch(
-        "main.get_todo_by_id",
+        "api.todo.get_todo_by_id",
         return_value=Todo(id=1, contents="FastAPI Section 0", is_done=True),
     )
     undone = mocker.patch.object(Todo, "undone")
     mocker.patch(
-        "main.update_todo",
+        "api.todo.update_todo",
         return_value=Todo(id=1, contents="FastAPI Section 0", is_done=False),
     )
 
@@ -104,7 +104,7 @@ def test_update_todo(client, mocker):
     assert response.json() == {"id": 1, "contents": "FastAPI Section 0", "is_done": False}
 
     # 404
-    mocker.patch("main.get_todo_by_id", return_value=None)
+    mocker.patch("api.todo.get_todo_by_id", return_value=None)
     response = client.patch("/todos/2", json={"is_done": False})
     assert response.status_code == 404
     assert response.json() == {"detail": "Todo not found"}
@@ -112,14 +112,14 @@ def test_update_todo(client, mocker):
 
 def test_delete_todo(client, mocker):
     # 204
-    mocker.patch("main.get_todo_by_id", return_value=Todo(id=1, contents="FastAPI Section 0", is_done=True))
-    mocker.patch("main.delete_todo", return_value=None)
+    mocker.patch("api.todo.get_todo_by_id", return_value=Todo(id=1, contents="FastAPI Section 0", is_done=True))
+    mocker.patch("api.todo.delete_todo", return_value=None)
 
     response = client.delete("/todos/1")
     assert response.status_code == 204
 
     # 404
-    mocker.patch("main.get_todo_by_id", return_value=None)
+    mocker.patch("api.todo.get_todo_by_id", return_value=None)
     response = client.delete("/todos/2")
     assert response.status_code == 404
     assert response.json() == {"detail": "Todo not found"}
