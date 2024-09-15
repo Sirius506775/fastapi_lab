@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import random
 import bcrypt
 from jose import jwt
 
@@ -32,3 +33,7 @@ class UserService:
 
         # expire time을 확인하여, 만료된 토큰인지 확인하는 로직 추가 필요
         return payload["sub"]  # username
+
+    @staticmethod  # instance method에 접근할 필요가 없기 때문에, @staticmethod를 사용하여 정적 메소드로 선언(self )
+    def create_otp() -> int:
+        return random.randint(1000, 9990)  # 1000 ~ 9990 사이의 랜덤한 4자리 숫자 생성
