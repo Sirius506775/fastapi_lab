@@ -42,6 +42,9 @@ class User(Base):
         "Todo", lazy="joined"
     )  # User와 Todo의 관계를 설정하여, User 객체로 Todo 객체에 접근할 수 있도록 함(객체참조)
 
+    def __repr__(self):
+        return f"User: {self.id}, {self.username}, {self.password}, {self.todos}"
+
     @classmethod
     def create(cls, username: str, hashed_password: str) -> "User":
         return cls(username=username, password=hashed_password)

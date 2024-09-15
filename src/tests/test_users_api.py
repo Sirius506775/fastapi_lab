@@ -1,6 +1,6 @@
 from database.orm import User
 from database.userRepository import UserRepository
-from service.user import UserService
+from service.userService import UserService
 
 
 def test_user_sign_up(client, mocker):
