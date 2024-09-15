@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import random
+import time
 import bcrypt
 from jose import jwt
 
@@ -37,3 +38,11 @@ class UserService:
     @staticmethod  # instance method에 접근할 필요가 없기 때문에, @staticmethod를 사용하여 정적 메소드로 선언(self )
     def create_otp() -> int:
         return random.randint(1000, 9990)  # 1000 ~ 9990 사이의 랜덤한 4자리 숫자 생성
+
+    @staticmethod
+    def send_email_to_user(
+        email: str,
+    ) -> None:
+
+        time.sleep(10)  # 1초 대기
+        print(f"Sending email to {email}")  # 이메일 전송 로직

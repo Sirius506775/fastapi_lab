@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 
 from database.orm import User
 from database.userRepository import UserRepository
@@ -94,6 +94,7 @@ def create_opt_handler(
 @router.post("/email/otp/verify", status_code=200)
 def verify_opt_handler(
     request: VerifyOTPRequest,
+    background_tasks: BackgroundTasks,
     access_token: str = Depends(get_access_token),
     user_service: UserService = Depends(),
     user_repo: UserRepository = Depends(),
@@ -114,5 +115,12 @@ def verify_opt_handler(
 
     # save email to user
     # 추후 이메일 컬럼을 추가하여, 저장해야함
+
+    # send email to user
+    # 추후 이메일 전송 로직을 추가해야함
+    background_tasks.add_task(
+        user_service.send_email_to_user, email="test@gmail.com"
+    )  # 백그라운드로 실행하여, 다른 스레드에서 실행
+    # user_service.send_email_to_user(email="test@gmail.com")  # 이메일을 저장했다고 가정함
 
     return UserSchema.from_orm(user)
