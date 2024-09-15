@@ -1,9 +1,5 @@
-from sqlalchemy import Boolean, Column, Integer, String
-from sqlalchemy.orm import declarative_base
-
-# test
-from sqlalchemy import select
-from database.connection import SessionFactory
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import declarative_base, relationship
 
 from schema.request import CreateTodoRequest
 
@@ -16,6 +12,7 @@ class Todo(Base):
     id = Column(Integer, primary_key=True, index=True)
     contents = Column(String(256), nullable=False)
     is_done = Column(Boolean, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"))
 
     def __repr__(self):  # 어떤 Todo 객체인지 확인하기 위해, __repr__ 메서드를 오버라이딩하여 사용
         return f"Todo: {self.id}, {self.contents}, {self.is_done}"
@@ -35,9 +32,16 @@ class Todo(Base):
         return self
 
 
-if __name__ == "__main__":
-    session = SessionFactory()
-    todo = list(session.scalars(select(Todo)))  # todos 테이블의 모든 데이터를 조회
+class User(Base):
+    __tablename__ = "user"
 
-    for t in todo:
-        print(t)
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(256), nullable=False)
+    password = Column(String(256), nullable=False)
+    todos = relationship(
+        "Todo", lazy="joined"
+    )  # User와 Todo의 관계를 설정하여, User 객체로 Todo 객체에 접근할 수 있도록 함(객체참조)
+
+    @classmethod
+    def create(cls, username: str, hashed_password: str) -> "User":
+        return cls(username=username, password=hashed_password)

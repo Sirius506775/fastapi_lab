@@ -17,7 +17,7 @@ class TodoRepository:
         self.session = session  # session을 self 속성에 저장
 
     def get_todos(self) -> List[Todo]:
-        return list(self.scalars(select(Todo)))
+        return list(self.session.scalars(select(Todo)))
 
     def get_todo_by_id(
         self, todo_id: int
@@ -25,17 +25,17 @@ class TodoRepository:
         return self.scalar(select(Todo).where(Todo.id == todo_id))
 
     def create_todo(self, todo: Todo) -> Todo:
-        self.add(todo)  # session에 todo 인스턴스 추가
-        self.commit()  # session에 추가된 todo 인스턴스를 DB에 반영(실제 저장되는 시점)
-        self.refresh(instance=todo)  # db에 저장된 todo 인스턴스를 다시 읽어옴(이 시점에 todo id가 생성됨)
+        self.session.add(todo)  # session에 todo 인스턴스 추가
+        self.session.commit()  # session에 추가된 todo 인스턴스를 DB에 반영(실제 저장되는 시점)
+        self.session.refresh(instance=todo)  # db에 저장된 todo 인스턴스를 다시 읽어옴(이 시점에 todo id가 생성됨)
         return todo  # 생성된 todo 인스턴스 반환
 
     def update_todo(self, todo: Todo) -> Todo:
-        self.add(todo)
-        self.commit()
-        self.refresh(instance=todo)
+        self.session.add(todo)
+        self.session.commit()
+        self.rsession.efresh(instance=todo)
         return todo
 
     def delete_todo(self, todo_id: int) -> None:
-        self.execute(delete(Todo).where(Todo.id == todo_id))
-        self.commit()
+        self.session.execute(delete(Todo).where(Todo.id == todo_id))
+        self.session.commit()

@@ -19,3 +19,11 @@ class TodoSchema(BaseModel):
 # response dto
 class TodoListSchema(BaseModel):  # 실제로 응답에 사용할 클래스
     todos: List[TodoSchema]  # 전체 todo 리스트를 담을 리스트
+
+
+class UserSchema(BaseModel):
+    id: int
+    username: str
+
+    class Config:
+        orm_mode = True
