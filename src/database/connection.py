@@ -9,7 +9,8 @@ load_dotenv()  # .env file load
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(
-    DATABASE_URL, echo=True
+    DATABASE_URL,
+    # echo=True
 )  # echo=True: sqlalchemy에 의해 query가 대신 처리될 때, 사용된 시점의 SQL문을 출력 - 디버깅용(개발환경에서만 사용, 운영환경에서는 사용하지 않음)
 SessionFactory = sessionmaker(
     autocommit=False, autoflush=False, bind=engine

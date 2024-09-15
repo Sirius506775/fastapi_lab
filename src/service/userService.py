@@ -26,3 +26,9 @@ class UserService:
             self.secret_key,
             algorithm=self.jwt_algorithm,
         )
+
+    def decode_jwt(self, access_token: str) -> str:
+        payload: dict = jwt.decode(access_token, self.secret_key, algorithms=self.jwt_algorithm)
+
+        # expire time을 확인하여, 만료된 토큰인지 확인하는 로직 추가 필요
+        return payload["sub"]  # username

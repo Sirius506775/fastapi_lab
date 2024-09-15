@@ -1,19 +1,25 @@
 # 언더바 네이밍 컨벤션을 맞춰야 pytest가 파일을 찾아서 테스트를 실행할 수 있음
-from database.orm import Todo
+from database.orm import Todo, User
 from database.repository import TodoRepository
+from database.userRepository import UserRepository
+from service.userService import UserService
 
 
 def test_get_todos(client, mocker):
+
+    access_token: str = UserService().create_jwt(username="test")
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    user = User.create(username="test", hashed_password="hashed")
+    user.todos = [
+        Todo(id=1, contents="FastAPI Section 0", is_done=True),
+        Todo(id=2, contents="FastAPI Section 1", is_done=False),
+    ]
+
     # order = asc
-    mocker.patch.object(
-        TodoRepository,
-        "get_todos",
-        return_value=[
-            Todo(id=1, contents="FastAPI Section 0", is_done=True),
-            Todo(id=2, contents="FastAPI Section 1", is_done=False),
-        ],
-    )
-    response = client.get("/todos")
+    mocker.patch.object(UserRepository, "get_user_by_username", return_value=user)
+
+    response = client.get("/todos", headers=headers)
     assert response.status_code == 200
     assert response.json() == {
         "todos": [
@@ -23,7 +29,7 @@ def test_get_todos(client, mocker):
     }
 
     # order = desc
-    response = client.get("/todos?order=desc")
+    response = client.get("/todos?order=desc", headers=headers)
     assert response.status_code == 200
     assert response.json() == {
         "todos": [

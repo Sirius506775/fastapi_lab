@@ -40,7 +40,7 @@ def user_sign_up_handler(
 # -[] 3.2 유효하지 않은 User인 경우, 에러를 반환한다.
 
 
-@router.post("/login-in", status_code=200)
+@router.post("/log-in", status_code=200)
 def user_log_in_handler(
     request: LoginRequest, user_service: UserService = Depends(), user_repo: UserRepository = Depends()
 ):
